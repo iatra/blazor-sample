@@ -1,0 +1,61 @@
+@using Game2048
+
+@inject IJSRuntime JsRuntime
+@inject IComponentContext ComponentContext
+@inject GameState GameState
+@implements IDisposable
+
+<div class="game" id="game">
+    <div id="game-board">
+        <div class="status">
+            <span>Score: @GameState.Score</span>
+        </div>
+        <div class="status">
+        </div>
+        <div class="game-info">
+            <span>@(GameState.IsStarted && !GameState.IsMoved ? "Nothing has moved" : null)</span>
+        </div>
+        <Board Squares="@GameState.Squares" />
+    </div>
+</div>
+
+@code {
+    private bool IsHandlerRegistered { get; set; }
+
+    [JSInvokable]
+    public async Task KeyPressed(UIKeyboardEventArgs e)
+    {
+        GameState = MoveHelper.Handle(e.Code, GameState);
+        if (GameState.IsMoved)
+        {
+            GameState.Squares = GameManager.GenerateNewSquare(GameState.Squares);
+        }
+
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    public async void Dispose()
+    {
+        if (!IsHandlerRegistered)
+            return;
+
+        await JsRuntime.InvokeAsync<object>("DeRegisterKeyDown");
+        IsHandlerRegistered = false;
+    }
+
+    protected override void OnAfterRender()
+    {
+        if (!ComponentContext.IsConnected)
+            return;
+
+        if (IsHandlerRegistered)
+            return;
+
+        JsRuntime.InvokeAsync<object>(
+            "RegisterKeyDown",
+            DotNetObjectRef.Create(this));
+
+        IsHandlerRegistered = true;
+    }
+
+}

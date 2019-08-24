@@ -1,0 +1,18 @@
+﻿@using Game2048
+
+<span class=@ClassName>@Item?.Number</span>
+
+@code {
+
+    [Parameter]
+    public SquareItem Item { get; set; }
+
+    private string ClassName => Item == null
+        ? "squareEmpty"
+        : Item.IsNew
+            ? "squareNew"
+            : Item.IsMerged
+                ? "squareMerged"
+                : "squareOld";
+
+}
