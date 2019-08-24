@@ -1,0 +1,20 @@
+﻿@using Game2048
+
+<div>
+    @foreach (var itemRow in Squares)
+    {
+        <div class="board-row">
+            @foreach (var item in itemRow)
+            {
+                <Tile Item="@item" />
+            }
+        </div>
+    }
+</div>
+
+@code {
+
+    [Parameter]
+    public SquareItem[][] Squares { get; set; }
+
+}

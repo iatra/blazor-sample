@@ -1,0 +1,101 @@
+﻿@page "/remaining/"
+@page "/remaining/{TargetDate:datetime}"
+@using System.Timers
+@using TimeCalculator
+@inject TimeService TimeService
+
+<h1>Time remaining until end of summer</h1>
+
+<p>This component demonstrates nothing at all.</p>
+<p>
+    @Now
+    <select @onchange="@SelectTimeZone" class="custom-select-sm">
+        @foreach (var x in Enumerable.Range(-12, 25))
+        {
+            var inlineText = $"GMT{(x >= 0 ? "+" : "")}{x}";
+            @if (x == Offset)
+            {
+                <option selected value="@x">@inlineText</option>
+            }
+            else
+            {
+                <option value="@x">@inlineText</option>
+            }
+        }
+    </select>
+</p>
+
+@if (TimeData == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Target Date</th>
+            <th>Time Left</th>
+            <th>Working Time Left</th>
+            <th>Hours Left</th>
+            <th>Days Left</th>
+            <th>Working Days Left</th>
+            <th>Working Hours Left</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>@TimeData.TargetDate</td>
+            <td>@TimeData.TimeSpan.ToString(@"dd\.hh\:mm\:ss\.f")</td>
+            <td>@TimeData.BdSpan.ToString(@"dd\.hh\:mm\:ss")</td>
+            <td>@TimeData.Hours</td>
+            <td>@TimeData.Days</td>
+            <td>@TimeData.WorkingDays</td>
+            <td>@TimeData.WorkingHours</td>
+        </tr>
+        </tbody>
+    </table>
+}
+
+@code {
+    private TimeData TimeData { get; set; }
+    private Timer Timer { get; set; }
+    private string Now { get; set; }
+    private int Offset { get; set; }
+
+    [Parameter]
+    public DateTime TargetDate { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var targetDate = new DateTime(2019, 8, 31, 23, 59, 59, 999);
+        if (TargetDate != default)
+        {
+            targetDate = TargetDate;
+        }
+
+        Timer = new Timer
+        {
+            AutoReset = true,
+            Interval = 50
+        };
+
+        Timer.Elapsed += async (o, a) =>
+        {
+            var now = DateTime.UtcNow.AddHours(Offset);
+            Now = now.ToLongTimeString();
+            TimeData = await TimeService.GetTime(targetDate, Offset);
+
+            await InvokeAsync(() => StateHasChanged());
+        };
+
+        await Task.Run(() => Timer.Start());
+    }
+
+    private void SelectTimeZone(UIChangeEventArgs e)
+    {
+        Offset = Convert.ToInt32(e.Value.ToString());
+    }
+}
