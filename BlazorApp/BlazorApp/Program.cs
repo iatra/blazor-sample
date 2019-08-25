@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Blazor.Hosting;
 
 namespace BlazorApp
 {
@@ -11,16 +9,11 @@ namespace BlazorApp
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args)
+        public static IWebAssemblyHostBuilder CreateHostBuilder(string[] args)
         {
-            return Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                    webBuilder.UseConfiguration(new ConfigurationBuilder()
-                        .AddCommandLine(args)
-                        .Build());
-                });
+            return BlazorWebAssemblyHost
+                .CreateDefaultBuilder()
+                .UseBlazorStartup<Startup>();
         }
     }
 }

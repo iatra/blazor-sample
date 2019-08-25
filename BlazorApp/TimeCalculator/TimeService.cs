@@ -14,14 +14,14 @@ namespace TimeCalculator
             var bdTimeSpan = BusinessTimeUntil(now, targetDate, new DateTime(2019, 8, 15));
 
             var daysRemaining =
-                Convert.ToDecimal(Math.Round(timeDiff.TotalDays, 2, MidpointRounding.ToPositiveInfinity));
+                Convert.ToDecimal(Math.Round(timeDiff.TotalDays, 2, MidpointRounding.AwayFromZero));
 
             var hoursRemaining =
-                Convert.ToDecimal(Math.Round(timeDiff.TotalHours, 2, MidpointRounding.ToPositiveInfinity));
+                Convert.ToDecimal(Math.Round(timeDiff.TotalHours, 2, MidpointRounding.AwayFromZero));
 
             var workingDaysRemaining =
                 Math.Round(bdTimeSpan.Days + bdTimeSpan.Hours / 8m + bdTimeSpan.Minutes / 60m / 8m, 2,
-                    MidpointRounding.ToPositiveInfinity);
+                    MidpointRounding.AwayFromZero);
 
             var workingHoursRemaining = bdTimeSpan.Days * 8 + bdTimeSpan.Hours;
 
@@ -48,6 +48,7 @@ namespace TimeCalculator
                 throw new ArgumentException("Incorrect last day " + lastDay);
 
             var span1Day = new TimeSpan(1, 0, 0, 0);
+            var span2Day = new TimeSpan(2, 0, 0, 0);
 
             var businessSpan = lastDay - firstDay;
             businessSpan += span1Day;
@@ -72,7 +73,7 @@ namespace TimeCalculator
                 if (firstDayOfWeek <= 6)
                 {
                     if (lastDayOfWeek >= 7) // Both Saturday and Sunday are in the remaining time interval
-                        businessSpan -= span1Day * 2;
+                        businessSpan -= span2Day;
                     else if (lastDayOfWeek >= 6) // Only Saturday is in the remaining time interval
                         businessSpan -= span1Day;
                 }
@@ -83,7 +84,7 @@ namespace TimeCalculator
             }
 
             // subtract the weekends during the full weeks in the interval
-            businessSpan -= (fullWeekCount + fullWeekCount) * span1Day;
+            businessSpan -= new TimeSpan(span1Day.Ticks * fullWeekCount * 2);
 
             // subtract the number of bank holidays during the time interval
             foreach (var bankHoliday in bankHolidays)

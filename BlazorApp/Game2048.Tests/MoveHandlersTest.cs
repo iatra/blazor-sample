@@ -1,27 +1,28 @@
 using System;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Game2048.Tests
 {
+    [TestClass]
     public class MoveHandlersTest
     {
-        [Theory]
-        [InlineData(new[] { 0, 0, 0, 0 }, new[] { 0, 0, 0, 0 })]
-        [InlineData(new[] { 0, 0, 0, 2 }, new[] { 0, 0, 0, 2 })]
-        [InlineData(new[] { 0, 0, 2, 0 }, new[] { 0, 0, 0, 2 })]
-        [InlineData(new[] { 0, 0, 2, 2 }, new[] { 0, 0, 0, 4 })]
-        [InlineData(new[] { 0, 2, 0, 0 }, new[] { 0, 0, 0, 2 })]
-        [InlineData(new[] { 0, 2, 0, 2 }, new[] { 0, 0, 0, 4 })]
-        [InlineData(new[] { 0, 2, 2, 0 }, new[] { 0, 0, 0, 4 })]
-        [InlineData(new[] { 0, 2, 2, 2 }, new[] { 0, 0, 2, 4 })]
-        [InlineData(new[] { 2, 0, 0, 0 }, new[] { 0, 0, 0, 2 })]
-        [InlineData(new[] { 2, 0, 0, 2 }, new[] { 0, 0, 0, 4 })]
-        [InlineData(new[] { 2, 0, 2, 0 }, new[] { 0, 0, 0, 4 })]
-        [InlineData(new[] { 2, 0, 2, 2 }, new[] { 0, 0, 2, 4 })]
-        [InlineData(new[] { 2, 2, 0, 0 }, new[] { 0, 0, 0, 4 })]
-        [InlineData(new[] { 2, 2, 0, 2 }, new[] { 0, 0, 2, 4 })]
-        [InlineData(new[] { 2, 2, 2, 0 }, new[] { 0, 0, 2, 4 })]
-        [InlineData(new[] { 2, 2, 2, 2 }, new[] { 0, 0, 4, 4 })]
+        [DataTestMethod]
+        [DataRow(new[] { 0, 0, 0, 0 }, new[] { 0, 0, 0, 0 })]
+        [DataRow(new[] { 0, 0, 0, 2 }, new[] { 0, 0, 0, 2 })]
+        [DataRow(new[] { 0, 0, 2, 0 }, new[] { 0, 0, 0, 2 })]
+        [DataRow(new[] { 0, 0, 2, 2 }, new[] { 0, 0, 0, 4 })]
+        [DataRow(new[] { 0, 2, 0, 0 }, new[] { 0, 0, 0, 2 })]
+        [DataRow(new[] { 0, 2, 0, 2 }, new[] { 0, 0, 0, 4 })]
+        [DataRow(new[] { 0, 2, 2, 0 }, new[] { 0, 0, 0, 4 })]
+        [DataRow(new[] { 0, 2, 2, 2 }, new[] { 0, 0, 2, 4 })]
+        [DataRow(new[] { 2, 0, 0, 0 }, new[] { 0, 0, 0, 2 })]
+        [DataRow(new[] { 2, 0, 0, 2 }, new[] { 0, 0, 0, 4 })]
+        [DataRow(new[] { 2, 0, 2, 0 }, new[] { 0, 0, 0, 4 })]
+        [DataRow(new[] { 2, 0, 2, 2 }, new[] { 0, 0, 2, 4 })]
+        [DataRow(new[] { 2, 2, 0, 0 }, new[] { 0, 0, 0, 4 })]
+        [DataRow(new[] { 2, 2, 0, 2 }, new[] { 0, 0, 2, 4 })]
+        [DataRow(new[] { 2, 2, 2, 0 }, new[] { 0, 0, 2, 4 })]
+        [DataRow(new[] { 2, 2, 2, 2 }, new[] { 0, 0, 4, 4 })]
         public void RightHandlerTest(int[] numbers, int[] expectedAfterMove)
         {
             var squares = GameManager.GetSquaresArray(4);
@@ -33,23 +34,23 @@ namespace Game2048.Tests
             AssertRows(newState, expectedAfterMove);
         }
 
-        [Theory]
-        [InlineData(new[] { 0, 0, 0, 0 }, new[] { 0, 0, 0, 0 })]
-        [InlineData(new[] { 0, 0, 0, 2 }, new[] { 0, 0, 0, 2 })]
-        [InlineData(new[] { 0, 0, 2, 0 }, new[] { 0, 0, 0, 2 })]
-        [InlineData(new[] { 0, 0, 2, 2 }, new[] { 0, 0, 0, 4 })]
-        [InlineData(new[] { 0, 2, 0, 0 }, new[] { 0, 0, 0, 2 })]
-        [InlineData(new[] { 0, 2, 0, 2 }, new[] { 0, 0, 0, 4 })]
-        [InlineData(new[] { 0, 2, 2, 0 }, new[] { 0, 0, 0, 4 })]
-        [InlineData(new[] { 0, 2, 2, 2 }, new[] { 0, 0, 2, 4 })]
-        [InlineData(new[] { 2, 0, 0, 0 }, new[] { 0, 0, 0, 2 })]
-        [InlineData(new[] { 2, 0, 0, 2 }, new[] { 0, 0, 0, 4 })]
-        [InlineData(new[] { 2, 0, 2, 0 }, new[] { 0, 0, 0, 4 })]
-        [InlineData(new[] { 2, 0, 2, 2 }, new[] { 0, 0, 2, 4 })]
-        [InlineData(new[] { 2, 2, 0, 0 }, new[] { 0, 0, 0, 4 })]
-        [InlineData(new[] { 2, 2, 0, 2 }, new[] { 0, 0, 2, 4 })]
-        [InlineData(new[] { 2, 2, 2, 0 }, new[] { 0, 0, 2, 4 })]
-        [InlineData(new[] { 2, 2, 2, 2 }, new[] { 0, 0, 4, 4 })]
+        [DataTestMethod]
+        [DataRow(new[] { 0, 0, 0, 0 }, new[] { 0, 0, 0, 0 })]
+        [DataRow(new[] { 0, 0, 0, 2 }, new[] { 0, 0, 0, 2 })]
+        [DataRow(new[] { 0, 0, 2, 0 }, new[] { 0, 0, 0, 2 })]
+        [DataRow(new[] { 0, 0, 2, 2 }, new[] { 0, 0, 0, 4 })]
+        [DataRow(new[] { 0, 2, 0, 0 }, new[] { 0, 0, 0, 2 })]
+        [DataRow(new[] { 0, 2, 0, 2 }, new[] { 0, 0, 0, 4 })]
+        [DataRow(new[] { 0, 2, 2, 0 }, new[] { 0, 0, 0, 4 })]
+        [DataRow(new[] { 0, 2, 2, 2 }, new[] { 0, 0, 2, 4 })]
+        [DataRow(new[] { 2, 0, 0, 0 }, new[] { 0, 0, 0, 2 })]
+        [DataRow(new[] { 2, 0, 0, 2 }, new[] { 0, 0, 0, 4 })]
+        [DataRow(new[] { 2, 0, 2, 0 }, new[] { 0, 0, 0, 4 })]
+        [DataRow(new[] { 2, 0, 2, 2 }, new[] { 0, 0, 2, 4 })]
+        [DataRow(new[] { 2, 2, 0, 0 }, new[] { 0, 0, 0, 4 })]
+        [DataRow(new[] { 2, 2, 0, 2 }, new[] { 0, 0, 2, 4 })]
+        [DataRow(new[] { 2, 2, 2, 0 }, new[] { 0, 0, 2, 4 })]
+        [DataRow(new[] { 2, 2, 2, 2 }, new[] { 0, 0, 4, 4 })]
         public void DownHandlerTest(int[] numbers, int[] expectedAfterMove)
         {
             var squares = GameManager.GetSquaresArray(4);
@@ -61,23 +62,23 @@ namespace Game2048.Tests
             AssertColumns(newState, expectedAfterMove);
         }
 
-        [Theory]
-        [InlineData(new[] { 0, 0, 0, 0 }, new[] { 0, 0, 0, 0 })]
-        [InlineData(new[] { 0, 0, 0, 2 }, new[] { 2, 0, 0, 0 })]
-        [InlineData(new[] { 0, 0, 2, 0 }, new[] { 2, 0, 0, 0 })]
-        [InlineData(new[] { 0, 0, 2, 2 }, new[] { 4, 0, 0, 0 })]
-        [InlineData(new[] { 0, 2, 0, 0 }, new[] { 2, 0, 0, 0 })]
-        [InlineData(new[] { 0, 2, 0, 2 }, new[] { 4, 0, 0, 0 })]
-        [InlineData(new[] { 0, 2, 2, 0 }, new[] { 4, 0, 0, 0 })]
-        [InlineData(new[] { 0, 2, 2, 2 }, new[] { 4, 2, 0, 0 })]
-        [InlineData(new[] { 2, 0, 0, 0 }, new[] { 2, 0, 0, 0 })]
-        [InlineData(new[] { 2, 0, 0, 2 }, new[] { 4, 0, 0, 0 })]
-        [InlineData(new[] { 2, 0, 2, 0 }, new[] { 4, 0, 0, 0 })]
-        [InlineData(new[] { 2, 0, 2, 2 }, new[] { 4, 2, 0, 0 })]
-        [InlineData(new[] { 2, 2, 0, 0 }, new[] { 4, 0, 0, 0 })]
-        [InlineData(new[] { 2, 2, 0, 2 }, new[] { 4, 2, 0, 0 })]
-        [InlineData(new[] { 2, 2, 2, 0 }, new[] { 4, 2, 0, 0 })]
-        [InlineData(new[] { 2, 2, 2, 2 }, new[] { 4, 4, 0, 0 })]
+        [DataTestMethod]
+        [DataRow(new[] { 0, 0, 0, 0 }, new[] { 0, 0, 0, 0 })]
+        [DataRow(new[] { 0, 0, 0, 2 }, new[] { 2, 0, 0, 0 })]
+        [DataRow(new[] { 0, 0, 2, 0 }, new[] { 2, 0, 0, 0 })]
+        [DataRow(new[] { 0, 0, 2, 2 }, new[] { 4, 0, 0, 0 })]
+        [DataRow(new[] { 0, 2, 0, 0 }, new[] { 2, 0, 0, 0 })]
+        [DataRow(new[] { 0, 2, 0, 2 }, new[] { 4, 0, 0, 0 })]
+        [DataRow(new[] { 0, 2, 2, 0 }, new[] { 4, 0, 0, 0 })]
+        [DataRow(new[] { 0, 2, 2, 2 }, new[] { 4, 2, 0, 0 })]
+        [DataRow(new[] { 2, 0, 0, 0 }, new[] { 2, 0, 0, 0 })]
+        [DataRow(new[] { 2, 0, 0, 2 }, new[] { 4, 0, 0, 0 })]
+        [DataRow(new[] { 2, 0, 2, 0 }, new[] { 4, 0, 0, 0 })]
+        [DataRow(new[] { 2, 0, 2, 2 }, new[] { 4, 2, 0, 0 })]
+        [DataRow(new[] { 2, 2, 0, 0 }, new[] { 4, 0, 0, 0 })]
+        [DataRow(new[] { 2, 2, 0, 2 }, new[] { 4, 2, 0, 0 })]
+        [DataRow(new[] { 2, 2, 2, 0 }, new[] { 4, 2, 0, 0 })]
+        [DataRow(new[] { 2, 2, 2, 2 }, new[] { 4, 4, 0, 0 })]
         public void LeftHandlerTest(int[] numbers, int[] expectedAfterMove)
         {
             var squares = GameManager.GetSquaresArray(4);
@@ -89,23 +90,23 @@ namespace Game2048.Tests
             AssertRows(newState, expectedAfterMove);
         }
 
-        [Theory]
-        [InlineData(new[] { 0, 0, 0, 0 }, new[] { 0, 0, 0, 0 })]
-        [InlineData(new[] { 0, 0, 0, 2 }, new[] { 2, 0, 0, 0 })]
-        [InlineData(new[] { 0, 0, 2, 0 }, new[] { 2, 0, 0, 0 })]
-        [InlineData(new[] { 0, 0, 2, 2 }, new[] { 4, 0, 0, 0 })]
-        [InlineData(new[] { 0, 2, 0, 0 }, new[] { 2, 0, 0, 0 })]
-        [InlineData(new[] { 0, 2, 0, 2 }, new[] { 4, 0, 0, 0 })]
-        [InlineData(new[] { 0, 2, 2, 0 }, new[] { 4, 0, 0, 0 })]
-        [InlineData(new[] { 0, 2, 2, 2 }, new[] { 4, 2, 0, 0 })]
-        [InlineData(new[] { 2, 0, 0, 0 }, new[] { 2, 0, 0, 0 })]
-        [InlineData(new[] { 2, 0, 0, 2 }, new[] { 4, 0, 0, 0 })]
-        [InlineData(new[] { 2, 0, 2, 0 }, new[] { 4, 0, 0, 0 })]
-        [InlineData(new[] { 2, 0, 2, 2 }, new[] { 4, 2, 0, 0 })]
-        [InlineData(new[] { 2, 2, 0, 0 }, new[] { 4, 0, 0, 0 })]
-        [InlineData(new[] { 2, 2, 0, 2 }, new[] { 4, 2, 0, 0 })]
-        [InlineData(new[] { 2, 2, 2, 0 }, new[] { 4, 2, 0, 0 })]
-        [InlineData(new[] { 2, 2, 2, 2 }, new[] { 4, 4, 0, 0 })]
+        [DataTestMethod]
+        [DataRow(new[] { 0, 0, 0, 0 }, new[] { 0, 0, 0, 0 })]
+        [DataRow(new[] { 0, 0, 0, 2 }, new[] { 2, 0, 0, 0 })]
+        [DataRow(new[] { 0, 0, 2, 0 }, new[] { 2, 0, 0, 0 })]
+        [DataRow(new[] { 0, 0, 2, 2 }, new[] { 4, 0, 0, 0 })]
+        [DataRow(new[] { 0, 2, 0, 0 }, new[] { 2, 0, 0, 0 })]
+        [DataRow(new[] { 0, 2, 0, 2 }, new[] { 4, 0, 0, 0 })]
+        [DataRow(new[] { 0, 2, 2, 0 }, new[] { 4, 0, 0, 0 })]
+        [DataRow(new[] { 0, 2, 2, 2 }, new[] { 4, 2, 0, 0 })]
+        [DataRow(new[] { 2, 0, 0, 0 }, new[] { 2, 0, 0, 0 })]
+        [DataRow(new[] { 2, 0, 0, 2 }, new[] { 4, 0, 0, 0 })]
+        [DataRow(new[] { 2, 0, 2, 0 }, new[] { 4, 0, 0, 0 })]
+        [DataRow(new[] { 2, 0, 2, 2 }, new[] { 4, 2, 0, 0 })]
+        [DataRow(new[] { 2, 2, 0, 0 }, new[] { 4, 0, 0, 0 })]
+        [DataRow(new[] { 2, 2, 0, 2 }, new[] { 4, 2, 0, 0 })]
+        [DataRow(new[] { 2, 2, 2, 0 }, new[] { 4, 2, 0, 0 })]
+        [DataRow(new[] { 2, 2, 2, 2 }, new[] { 4, 4, 0, 0 })]
         public void UpHandlerTest(int[] numbers, int[] expectedAfterMove)
         {
             var squares = GameManager.GetSquaresArray(4);
@@ -126,11 +127,11 @@ namespace Game2048.Tests
                     var expectedNumber = expectedNumbers[i];
                     if (expectedNumber == 0)
                     {
-                        Assert.Null(row[i]);
+                        Assert.IsNull(row[i]);
                     }
                     else
                     {
-                        Assert.Equal(expectedNumber, row[i].Number);
+                        Assert.AreEqual(expectedNumber, row[i].Number);
                     }
                 }
             }
@@ -146,11 +147,11 @@ namespace Game2048.Tests
                 {
                     if (expectedNumber == 0)
                     {
-                        Assert.Null(row[j]);
+                        Assert.IsNull(row[j]);
                     }
                     else
                     {
-                        Assert.Equal(expectedNumber, row[j].Number);
+                        Assert.AreEqual(expectedNumber, row[j].Number);
                     }
                 }
             }
