@@ -21,17 +21,89 @@
 
 @code {
     private bool IsHandlerRegistered { get; set; }
+    private int ClientX { get; set; }
+    private int ClientY { get; set; }
 
     [JSInvokable]
-    public async Task KeyPressed(UIKeyboardEventArgs e)
+    public async Task KeyDown(string code)
     {
-        GameState = MoveHelper.Handle(e.Code, GameState);
+        switch (code)
+        {
+            case "ArrowUp":
+                MoveHelper.HandleUp(GameState);
+                break;
+                
+            case "ArrowRight":
+                MoveHelper.HandleRight(GameState);
+                break;
+                
+            case "ArrowDown":
+                MoveHelper.HandleDown(GameState);
+                break;
+                
+            case "ArrowLeft":
+                MoveHelper.HandleLeft(GameState);
+                break;
+                
+            default:
+                return;
+        }
+        
         if (GameState.IsMoved)
         {
             GameState.Squares = GameManager.GenerateNewSquare(GameState.Squares);
         }
 
-        await InvokeAsync(() => StateHasChanged());
+        await InvokeAsync(StateHasChanged);
+    }
+    
+    [JSInvokable]
+    public async Task TouchStart(int clientX, int clientY)
+    {
+        ClientX = clientX;
+        ClientY = clientY;
+
+        await Task.Yield();
+    }
+    
+    [JSInvokable]
+    public async Task TouchEnd(int clientX, int clientY)
+    {
+        var xDiff = clientX - ClientX;
+        var yDiff = clientY - ClientY;
+        
+        if (xDiff == 0 && yDiff == 0)
+            return;
+        
+        if (Math.Abs(xDiff) > Math.Abs(yDiff))
+        {
+            if (xDiff > 0)
+            {
+                MoveHelper.HandleRight(GameState);
+            }
+            else if (xDiff < 0)
+            {
+                MoveHelper.HandleLeft(GameState);
+            }
+        }
+        else
+        {
+            if (yDiff > 0)
+            {
+                MoveHelper.HandleDown(GameState);
+            }
+            else if (yDiff < 0)
+            {
+                MoveHelper.HandleUp(GameState);
+            }
+        }
+        
+        if (GameState.IsMoved)
+        {
+            GameState.Squares = GameManager.GenerateNewSquare(GameState.Squares);
+        }
+
+        await InvokeAsync(StateHasChanged);
     }
 
     public async void Dispose()
@@ -39,7 +111,7 @@
         if (!IsHandlerRegistered)
             return;
 
-        await JsRuntime.InvokeAsync<object>("DeRegisterKeyDown");
+        await JsRuntime.InvokeAsync<object>("DeregisterCsHandlers");
         IsHandlerRegistered = false;
     }
 
@@ -52,7 +124,7 @@
             return;
 
         JsRuntime.InvokeAsync<object>(
-            "RegisterKeyDown",
+            "RegisterCsHandlers",
             DotNetObjectRef.Create(this));
 
         IsHandlerRegistered = true;
