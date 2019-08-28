@@ -28,7 +28,7 @@ namespace Game2048.Tests
             var state = new GameState {Squares = squares};
             AssignRows(state, numbers);
             
-            var newState = MoveHelper.Handle("ArrowRight", state);
+            var newState = MoveHelper.HandleRight(state);
 
             AssertRows(newState, expectedAfterMove);
         }
@@ -56,7 +56,7 @@ namespace Game2048.Tests
             var state = new GameState { Squares = squares };
             AssignColumns(state, numbers);
 
-            var newState = MoveHelper.Handle("ArrowDown", state);
+            var newState = MoveHelper.HandleDown(state);
 
             AssertColumns(newState, expectedAfterMove);
         }
@@ -84,7 +84,7 @@ namespace Game2048.Tests
             var state = new GameState { Squares = squares };
             AssignRows(state, numbers);
 
-            var newState = MoveHelper.Handle("ArrowLeft", state);
+            var newState = MoveHelper.HandleLeft(state);
 
             AssertRows(newState, expectedAfterMove);
         }
@@ -112,7 +112,7 @@ namespace Game2048.Tests
             var state = new GameState { Squares = squares };
             AssignColumns(state, numbers);
 
-            var newState = MoveHelper.Handle("ArrowUp", state);
+            var newState = MoveHelper.HandleUp(state);
 
             AssertColumns(newState, expectedAfterMove);
         }
