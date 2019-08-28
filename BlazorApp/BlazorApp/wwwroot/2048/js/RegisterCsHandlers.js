@@ -8,7 +8,7 @@ window.RegisterCsHandlers = (instance) => {
     handlersReferenceContainer.touchEnd = (e) => invokeTouchEnd(instance, e);
     
     document.addEventListener("keydown", handlersReferenceContainer.keyDown, false);
-    document.addEventListener("touchmove", handleTouchMove, false);
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
     
     const doc = document.getElementById("game-board");
     doc.addEventListener("touchstart", handlersReferenceContainer.touchStart, false);
@@ -24,7 +24,7 @@ function handleTouchMove(event) {
 
 window.DeregisterCsHandlers = () => {
     document.removeEventListener("keydown", handlersReferenceContainer.keyDown, false);
-    document.removeEventListener("touchmove", handleTouchMove, false);
+    document.removeEventListener("touchmove", handleTouchMove, { passive: false });
     
     const doc = document.getElementById("game-board");
     doc.removeEventListener("touchstart", handlersReferenceContainer.touchStart, false);
@@ -53,11 +53,9 @@ function invokeTouchStart(instance, event) {
 
 function invokeTouchEnd(instance, event) {
     if (event) {
-        if (event) {
-            let touch = event.touches[0];
+        let touch = event.changedTouches[0];
 
-            // noinspection JSUnresolvedFunction
-            instance.invokeMethodAsync("TouchEnd", touch.clientX, touch.clientY);
-        }
+        // noinspection JSUnresolvedFunction
+        instance.invokeMethodAsync("TouchEnd", touch.clientX, touch.clientY);
     }
 }
