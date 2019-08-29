@@ -1,29 +1,14 @@
 ﻿@page "/remaining/"
-@page "/remaining/{TargetDate:datetime}"
 @using System.Timers
 @using TimeCalculator
 @inject TimeService TimeService
+@inject IComponentContext ComponentContext
+@inject IJSRuntime JsRuntime
 
-<h1>Time remaining until end of summer</h1>
+<h1>@WelcomeString</h1>
 
 <p>This component demonstrates nothing at all.</p>
-<p>
-    @Now
-    <select @onchange="@SelectTimeZone" class="custom-select-sm">
-        @foreach (var x in Enumerable.Range(-12, 25))
-        {
-            var inlineText = $"GMT{(x >= 0 ? "+" : "")}{x}";
-            @if (x == Offset)
-            {
-                <option selected value="@x">@inlineText</option>
-            }
-            else
-            {
-                <option value="@x">@inlineText</option>
-            }
-        }
-    </select>
-</p>
+<p>@Now</p>
 
 @if (TimeData == null)
 {
@@ -62,40 +47,64 @@ else
 @code {
     private TimeData TimeData { get; set; }
     private Timer Timer { get; set; }
-    private string Now { get; set; }
     private int Offset { get; set; }
-
-    [Parameter]
-    public DateTime TargetDate { get; set; }
+    private bool OffsetInitialized { get; set; }
+    private DateTime TargetTime { get; set; }
+    
+    private string Now { get; set; }
+    private string WelcomeString { get; set; } = "You don't see this, your eyes are lying";
 
     protected override async Task OnInitializedAsync()
     {
-        var targetDate = new DateTime(2019, 8, 31, 23, 59, 59, 999);
-        if (TargetDate != default)
-        {
-            targetDate = TargetDate;
-        }
-
         Timer = new Timer
         {
             AutoReset = true,
             Interval = 50
         };
 
-        Timer.Elapsed += async (o, a) =>
-        {
-            var now = DateTime.UtcNow.AddHours(Offset);
-            Now = now.ToLongTimeString();
-            TimeData = await TimeService.GetTime(targetDate, Offset);
-
-            await InvokeAsync(() => StateHasChanged());
-        };
-
+        Timer.Elapsed += OnTimer;
+        
         await Task.Run(() => Timer.Start());
     }
 
-    private void SelectTimeZone(UIChangeEventArgs e)
+    protected override async Task OnAfterRenderAsync()
     {
-        Offset = Convert.ToInt32(e.Value.ToString());
+        if (!ComponentContext.IsConnected)
+            return;
+
+        if (OffsetInitialized)
+            return;
+        
+        Offset = await JsRuntime.InvokeAsync<int>("getTimezoneOffset");
+        OffsetInitialized = true;
+
+        var localTime = DateTime.UtcNow.AddMinutes(-Offset);
+        RefreshTargetTime(localTime);
     }
+
+    private async void OnTimer(object state, ElapsedEventArgs args)
+    {
+        var localTime = GetLocalTime();
+        if (localTime > TargetTime)
+        {
+            RefreshTargetTime(localTime);
+        }
+            
+        Now = localTime.ToLongTimeString();
+        TimeData = await TimeService.GetTime(localTime, TargetTime);
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private DateTime GetLocalTime()
+    {
+        return DateTime.UtcNow.AddMinutes(-Offset);
+    }
+
+    private void RefreshTargetTime(DateTime localTime)
+    {
+        TargetTime = TimeService.GetNextTargetDate(localTime, out var season);
+        WelcomeString = $"Time remaining until the end of {season}";
+    }
+
 }
