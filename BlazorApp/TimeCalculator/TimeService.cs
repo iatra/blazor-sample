@@ -5,13 +5,11 @@ namespace TimeCalculator
 {
     public class TimeService
     {
-        public Task<TimeData> GetTime(DateTime targetDate, int gmtOffset)
+        public static Task<TimeData> GetTime(DateTime dateFrom, DateTime dateTo)
         {
-            var now = DateTime.UtcNow.AddHours(gmtOffset);
+            var timeDiff = dateTo - dateFrom;
 
-            var timeDiff = targetDate - now;
-
-            var bdTimeSpan = BusinessTimeUntil(now, targetDate, new DateTime(2019, 8, 15));
+            var bdTimeSpan = BusinessTimeUntil(dateFrom, dateTo, new DateTime(2019, 8, 15));
 
             var daysRemaining =
                 Convert.ToDecimal(Math.Round(timeDiff.TotalDays, 2, MidpointRounding.ToPositiveInfinity));
@@ -27,7 +25,7 @@ namespace TimeCalculator
 
             var result = new TimeData
             {
-                TargetDate = targetDate,
+                TargetDate = dateTo,
                 TimeSpan = timeDiff,
                 BdSpan = bdTimeSpan,
                 Days = daysRemaining,
@@ -37,6 +35,41 @@ namespace TimeCalculator
             };
 
             return Task.FromResult(result);
+        }
+
+        public static DateTime GetNextTargetDate(DateTime now, out string season)
+        {
+            if (now.Month < 3)
+            {
+                season = "winter";
+                return new DateTime(now.Year, 3, 1, 0, 0, 0, 0)
+                    .AddMilliseconds(-1);
+            }
+
+            if (now.Month < 6)
+            {
+                season = "spring";
+                return new DateTime(now.Year, 6, 1, 0, 0, 0, 0)
+                    .AddMilliseconds(-1);
+            }
+            
+            if (now.Month < 9)
+            {
+                season = "summer";
+                return new DateTime(now.Year, 9, 1, 0, 0, 0, 0)
+                    .AddMilliseconds(-1);
+            }
+
+            if (now.Month < 12)
+            {
+                season = "autumn";
+                return new DateTime(now.Year, 12, 1, 0, 0, 0, 0)
+                    .AddMilliseconds(-1);
+            }
+            
+            season = "winter";
+            return new DateTime(now.Year + 1, 3, 1, 0, 0, 0, 0)
+                .AddMilliseconds(-1);
         }
 
         private static TimeSpan BusinessTimeUntil(DateTime firstDateTime, DateTime lastDateTime,
